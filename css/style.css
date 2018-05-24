@@ -1,0 +1,119 @@
+/* sticky table */
+.sticky_table {
+  display: block;
+  overflow: hidden;
+  width: calc(100vw - 3.0rem);
+  /* fixed value */
+  height: calc(100vh - 7.0rem);
+  /* fixed value */
+  margin: 0 auto;
+}
+.sticky_table table {
+  display: block;
+  position: relative;
+  overflow: scroll;
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  font-size: 0;
+}
+.sticky_table table thead, .sticky_table table tbody {
+  display: block;
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
+}
+.sticky_table table th, .sticky_table table td {
+  /*display: inline-block;*/
+  /*min-width: 3.0rem;*/
+  /* fixed value */
+  background: #fff;
+  font-size: 0.8rem;
+}
+.sticky_table table tbody th {
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+.sticky_table table tbody td.top {
+  position: -webkit-sticky;
+  position: sticky;
+  max-width: 50px;
+  top: 0;
+  z-index: 2;
+  background: #424242 !important;
+  color: #E0E0E0;
+}
+.sticky_table table tbody th.top {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 3;
+}
+
+/* design */
+body {
+  background: #ECEFF1;
+  font-family: 'Noto Sans', sans-serif;
+  padding: .5rem;
+}
+
+.sticky_table {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.sticky_table:hover {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+.sticky_table table {
+  border: 1px solid #CFD8DC;
+}
+.sticky_table th, .sticky_table td {
+  text-align: left;
+  padding: .1rem .2rem;
+  font-weight: normal;
+}
+.sticky_table thead th {
+  background: #424242;
+  color: #E0E0E0;
+}
+.sticky_table tbody tr:nth-child(even) th {
+  background: #dccdc7;
+}
+.sticky_table tbody tr:nth-child(even) td {
+  background: #f0f0f0;
+}
+.sticky_table tbody tr:nth-child(even) td input {
+  background: #f0f0f0;
+  border: 0px;
+}
+.sticky_table tbody tr:nth-child(odd) th {
+  background: #E4D8D4;
+}
+.sticky_table tbody tr:nth-child(odd) td {
+  background: #FAFAFA;
+}
+.sticky_table tbody tr:nth-child(odd) td input {
+  background: #FAFAFA;
+  border: 0px;
+}
+::-webkit-input-placeholder {
+    color: red;
+}
+.support {
+  width: calc(100vw - 3.0rem);
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+.support tr {
+  background: #FFF9C4;
+}
+.support tr:nth-child(odd) {
+  background: #fff7b0;
+}
+.support tr td {
+  color: #616161;
+  padding: .2rem .5rem;
+}

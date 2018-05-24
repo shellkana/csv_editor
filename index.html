@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>StickyTable</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Noto+Sans'>
+    <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <h1>StickyTable</h1>
+    <input type="file" id="file"> <a id="save" href="#">save</a>
+    <div class='sticky_table'>
+        <table id="table"></table>
+    </div>
+    <canvas id="myCanvas" height="0px"></canvas>
+    <script type="text/javascript">
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+    ctx.font = "0.8rem sans-serif";
+
+    function getWidth(_str) {
+        return ctx.measureText(_str).width;
+    }
+    var file = $("#file");
+    var table = $("#table");
+    file.on("change", function(_e) {
+        $("#save").off("click");
+        table.empty();
+        var reader = new FileReader();
+        reader.readAsText(_e.target.files[0]);
+        reader.onload = function() {
+            var array = reader.result.split("\n");
+            var csvArray = [];
+            array.forEach(element => {
+                csvArray.push(element.split(","));
+            });
+            var tbody = $("<tbody></tbody>");
+            var maxWidth = [];
+            csvArray.forEach((element, index) => {
+                element.forEach((element2, index2) => {
+                    if (index == 0) {
+                        maxWidth.push(50);
+                    }
+                    if (index != 0) {
+                        maxWidth[index2] = Math.max(maxWidth[index2], getWidth(element2));
+                    }
+                });
+            });
+            csvArray.forEach((element, index) => {
+                var tr = $("<tr></tr>");
+                element.forEach((element2, index2) => {
+                    var td;
+                    if (index2 != 0 && index == 0) {
+                        td = $("<td>" + element2 + "</td>");
+                    } else
+                    if (index2 == 0) {
+                        td = $("<th>" + element2 + "</th>");
+                    } else {
+                        var width = getWidth(element2);
+                        td = $(`<td></td>`);
+                        var input = $(`<input type = 'text' value='${element2}' placeholder='${element2}' style='width:${maxWidth[index2]}px'>`);
+                        td.append(input);
+                        input.on("change", function(_e2) {
+                            console.log(index + "," + index2);
+                            console.log(_e2.target.value);
+                            csvArray[index][index2] = _e2.target.value;
+                        });
+                        input.on('mousewheel.disableScroll', function(e) {
+                            e.preventDefault()
+                        });
+                        input.on('mousewheel', function(e) {
+                            table.scrollTop(table.scrollTop() - e.originalEvent.wheelDelta);
+                        });
+                    }
+                    if (index == 0) {
+                        td.addClass("top");
+                    }
+                    tr.append(td);
+                });
+                tbody.append(tr);
+            });
+            table.append(tbody);
+            $(".sticky_table").append(table);
+            $("#save").on("click", function() {
+                console.log(csvArray);
+                var lineArray = [];
+                csvArray.forEach(element => {
+                    lineArray.push(element.join(","));
+                });
+                console.log(lineArray.join("\n"));
+                const blob = new Blob([lineArray.join("\n")], { type: 'text\/csv' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = _e.target.files[0].name;
+                link.click();
+                URL.revokeObjectURL(url);
+            });
+        };
+    });
+    </script>
+</body>
+
+</html>
