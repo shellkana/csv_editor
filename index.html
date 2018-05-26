@@ -75,7 +75,6 @@
                 if (index2 == 0) {
                     td = $("<th>" + element2 + "</th>");
                 } else {
-                    var width = getWidth(element2);
                     td = $(`<td></td>`);
                     var input = $(`<input type = 'text' value='${element2}' placeholder='${element2}' style='width:${maxWidth[index2]}px'>`);
                     if (index + ":" + index2 in fixedObj) {
@@ -96,12 +95,11 @@
                         tr2.empty();
                         if (!(index + ":" + index2 in fixedObj)) {
                             fixedObj[index + ":" + index2] = element2;
-                            console.log(fixedObj);
                         }
                         element.forEach((element3, index3) => {
                             var td2;
                             if (index + ":" + index3 in fixedObj) {
-                                td2 = $(`<td style='color:black; background:#fdb8c0'>${fixedObj[index + ":"+index3]}</td>`);
+                                td2 = $(`<td style='color:black; background:#fdb8c0'>${fixedObj[index + ":" + index3]}</td>`);
                             } else {
                                 td2 = $("<td></td>");
                             }
@@ -125,10 +123,10 @@
 
             if (hasFixed) {
                 var tr3 = $("<tr></tr>");
-                element.forEach((element2, index3) => {
+                element.forEach((element3, index3) => {
                     var td2;
                     if (index + ":" + index3 in fixedObj) {
-                        td2 = $(`<td style='color:black; background:#fdb8c0'>${fixedObj[index + ":"+index3]}</td>`);
+                        td2 = $(`<td style='color:black; background:#fdb8c0'>${fixedObj[index + ":" + index3]}</td>`);
                     } else {
                         td2 = $("<td></td>");
                     }
@@ -182,7 +180,6 @@
                 csvArray.forEach(element => {
                     lineArray.push(element.join(","));
                 });
-                console.log(lineArray.join("\n"));
                 const blob = new Blob([lineArray.join("\n")], { type: 'text\/csv' });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
