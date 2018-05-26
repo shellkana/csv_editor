@@ -162,8 +162,8 @@
                     var page = $(`<a href='#'>|${start}-${end}|</a>`);
                     page.on('click', function() {
                         draw(csvArray, start, end);
-                        page.css("color", "black");
                         pages[currentPage].css("color", "blue");
+                        page.css("color", "black");
                         currentPage = _i;
                     });
                     page.css("color", "blue");
