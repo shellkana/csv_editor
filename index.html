@@ -20,24 +20,30 @@
     </div>
     <canvas id="myCanvas" height="0px"></canvas>
     <script type="text/javascript">
+    // キャンバスを使うと文字列の幅を計算できる
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
     ctx.font = "0.8rem sans-serif";
-
     function getWidth(_str) {
         return ctx.measureText(_str).width;
     }
 
     var file = $("#file");
     var table = $("#table");
+
+    // 修正した箇所にもともと何が入っていたかを記憶する
+    // キーは"行:列"のstring
     var fixedObj = {};
 
+    // 描画処理
     function draw(_csvArray, _start, _end) {
         table.empty();
         table.scrollTop(0);
         var tbody = $("<tbody></tbody>");
-        var maxWidth = [];
         var trObj = {};
+        
+        // inputの幅を決定するためにその列の最大幅を取得する
+        var maxWidth = [];
         _csvArray.some((element, index) => {
             if (index != 0) {
                 if (index < _start - 1) {
@@ -48,6 +54,7 @@
                 }
             }
             element.forEach((element2, index2) => {
+                // 最初の行はあまり重要ではないのではみ出てもいいことにしている
                 if (index == 0) {
                     maxWidth.push(50);
                 }
@@ -56,6 +63,8 @@
                 }
             });
         });
+
+
         _csvArray.some((element, index) => {
             if (index != 0) {
                 if (index < _start - 1) {
@@ -69,21 +78,25 @@
             var hasFixed = false;
             element.forEach((element2, index2) => {
                 var td;
-                if (index2 != 0 && index == 0) {
-                    td = $("<td>" + element2 + "</td>");
-                } else
                 if (index2 == 0) {
                     td = $("<th>" + element2 + "</th>");
+                } else if (index == 0) {
+                    td = $("<td>" + element2 + "</td>");
                 } else {
                     td = $(`<td></td>`);
                     var input = $(`<input type = 'text' value='${element2}' placeholder='${element2}' style='width:${maxWidth[index2]}px'>`);
-                    if (index + ":" + index2 in fixedObj) {
-                        hasFixed = true;
-                    }
                     td.append(input);
+
                     input.on("change", function(_e2) {
                         console.log(index + "," + index2);
                         console.log(_e2.target.value);
+                        
+                        // 編集前の値の記憶
+                        if (!(index + ":" + index2 in fixedObj)) {
+                            fixedObj[index + ":" + index2] = element2;
+                        }
+
+                        // 編集前の値を表示する
                         var tr2;
                         if (!("row" + index in trObj)) {
                             tr2 = $("<tr></tr>");
@@ -93,9 +106,6 @@
                             tr2 = trObj["row" + index];
                         }
                         tr2.empty();
-                        if (!(index + ":" + index2 in fixedObj)) {
-                            fixedObj[index + ":" + index2] = element2;
-                        }
                         element.forEach((element3, index3) => {
                             var td2;
                             if (index + ":" + index3 in fixedObj) {
@@ -105,43 +115,55 @@
                             }
                             tr2.append(td2);
                         });
+
                         _csvArray[index][index2] = _e2.target.value;
-                    });
+                    }); // onchange ここまで
+
                     input.on('mousewheel.disableScroll', function(e) {
                         e.preventDefault()
                     });
                     input.on('mousewheel', function(e) {
                         table.scrollTop(table.scrollTop() - e.originalEvent.wheelDelta);
                     });
-                }
+
+                    if (index + ":" + index2 in fixedObj) {
+                        hasFixed = true;
+                    }
+                    
+                } // 真ん中要素の生成 ここまで
+
                 if (index == 0) {
                     td.addClass("top");
                 }
                 tr.append(td);
-            });
+            }); // forEach ここまで
+
             tbody.append(tr);
 
             if (hasFixed) {
                 var tr3 = $("<tr></tr>");
                 element.forEach((element3, index3) => {
-                    var td2;
+                    var td3;
                     if (index + ":" + index3 in fixedObj) {
-                        td2 = $(`<td style='color:black; background:#fdb8c0'>${fixedObj[index + ":" + index3]}</td>`);
+                        td3 = $(`<td style='color:black; background:#fdb8c0'>${fixedObj[index + ":" + index3]}</td>`);
                     } else {
-                        td2 = $("<td></td>");
+                        td3 = $("<td></td>");
                     }
-                    tr3.append(td2);
+                    tr3.append(td3);
                 });
                 tbody.append(tr3);
             }
 
-        });
+        }); // some ここまで
         table.append(tbody);
-    }
+    } // draw ここまで
+
     file.on("change", function(_e) {
+        
         $("#save").off("click");
         table.empty();
         fixedObj = {};
+
         var reader = new FileReader();
         reader.readAsText(_e.target.files[0]);
         reader.onload = function() {
@@ -174,6 +196,8 @@
             pages[currentPage].css("color", "black");
 
             draw(csvArray, 1, pagenum);
+
+            // 保存ボタンクリック時
             $("#save").on("click", function() {
                 console.log(csvArray);
                 var lineArray = [];
@@ -188,8 +212,8 @@
                 link.click();
                 URL.revokeObjectURL(url);
             });
-        };
-    });
+        }; // onload ここまで
+    }); //file onchange ここまで
     </script>
 </body>
 
