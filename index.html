@@ -9,6 +9,7 @@
     <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Noto+Sans'>
     <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 </head>
 
@@ -20,10 +21,15 @@
     </div>
     <canvas id="myCanvas" height="0px"></canvas>
     <script type="text/javascript">
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('worker.js');
+    }
+
     // キャンバスを使うと文字列の幅を計算できる
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
     ctx.font = "0.8rem sans-serif";
+
     function getWidth(_str) {
         return ctx.measureText(_str).width;
     }
@@ -41,10 +47,10 @@
         table.scrollTop(0);
         var tbody = $("<tbody></tbody>");
         var trObj = {};
-        
+
         // inputの幅を決定するためにその列の最大幅を取得する
         var maxWidth = [];
-        _csvArray.some((element, index) => {
+        _csvArray.some(function(element, index) {
             if (index != 0) {
                 if (index < _start - 1) {
                     return false;
@@ -53,7 +59,7 @@
                     return true;
                 }
             }
-            element.forEach((element2, index2) => {
+            element.forEach(function(element2, index2) {
                 // 最初の行はあまり重要ではないのではみ出てもいいことにしている
                 if (index == 0) {
                     maxWidth.push(50);
@@ -65,7 +71,7 @@
         });
 
 
-        _csvArray.some((element, index) => {
+        _csvArray.some(function(element, index) {
             if (index != 0) {
                 if (index < _start - 1) {
                     return false;
@@ -76,12 +82,12 @@
             }
             var tr = $("<tr></tr>");
             var hasFixed = false;
-            element.forEach((element2, index2) => {
+            element.forEach(function(element2, index2) {
                 var td;
                 if (index2 == 0) {
                     td = $("<th>" + element2 + "</th>");
                 } else if (index == 0) {
-                    td = $("<td>" + element2 + "</td>");
+                    td = $("<td>" + element2.replace(/_/g, " ") + "</td>");
                 } else {
                     td = $(`<td></td>`);
                     var input = $(`<input type = 'text' value='${element2}' placeholder='${element2}' style='width:${maxWidth[index2]}px'>`);
@@ -90,7 +96,7 @@
                     input.on("change", function(_e2) {
                         console.log(index + "," + index2);
                         console.log(_e2.target.value);
-                        
+
                         // 編集前の値の記憶
                         if (!(index + ":" + index2 in fixedObj)) {
                             fixedObj[index + ":" + index2] = element2;
@@ -106,7 +112,7 @@
                             tr2 = trObj["row" + index];
                         }
                         tr2.empty();
-                        element.forEach((element3, index3) => {
+                        element.forEach(function(element3, index3) {
                             var td2;
                             if (index + ":" + index3 in fixedObj) {
                                 td2 = $(`<td style='color:black; background:#fdb8c0'>${fixedObj[index + ":" + index3]}</td>`);
@@ -129,7 +135,7 @@
                     if (index + ":" + index2 in fixedObj) {
                         hasFixed = true;
                     }
-                    
+
                 } // 真ん中要素の生成 ここまで
 
                 if (index == 0) {
@@ -142,7 +148,7 @@
 
             if (hasFixed) {
                 var tr3 = $("<tr></tr>");
-                element.forEach((element3, index3) => {
+                element.forEach(function(element3, index3) {
                     var td3;
                     if (index + ":" + index3 in fixedObj) {
                         td3 = $(`<td style='color:black; background:#fdb8c0'>${fixedObj[index + ":" + index3]}</td>`);
@@ -159,7 +165,7 @@
     } // draw ここまで
 
     file.on("change", function(_e) {
-        
+
         $("#save").off("click");
         table.empty();
         fixedObj = {};
@@ -169,7 +175,7 @@
         reader.onload = function() {
             var array = reader.result.split("\n");
             var csvArray = [];
-            array.forEach(element => {
+            array.forEach(function(element) {
                 csvArray.push(element.split(","));
             });
             var span = $("#page");
@@ -201,7 +207,7 @@
             $("#save").on("click", function() {
                 console.log(csvArray);
                 var lineArray = [];
-                csvArray.forEach(element => {
+                csvArray.forEach(function(element) {
                     lineArray.push(element.join(","));
                 });
                 const blob = new Blob([lineArray.join("\n")], { type: 'text\/csv' });

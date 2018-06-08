@@ -1,0 +1,12 @@
+{
+    "short_name": "csv_editor",
+    "name": "csv_editor",
+    "start_url": "index.html?launcher=true",
+    "icons": [
+    {
+        "src": "character_program_smart.png",
+        "type": "image/png",
+        "sizes": "144x144"
+    }],
+    "display": "standalone"
+}
