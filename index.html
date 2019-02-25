@@ -15,7 +15,7 @@
 
 <body>
     <h1>StickyTable</h1>
-    <input type="file" id="file"> <a id="save" href="#">save</a><span id="page"></span>
+    <input type="file" id="file"> <a id="save" href="#">save</a> <input type="text"  style="width:100px;" id="search"><span id="page"></span>
     <div class='sticky_table'>
         <table id="table"></table>
     </div>
@@ -36,6 +36,7 @@
 
     var file = $("#file");
     var table = $("#table");
+
 
     // 修正した箇所にもともと何が入っていたかを記憶する
     // キーは"行:列"のstring
@@ -88,10 +89,18 @@
             var hasFixed = false;
             element.forEach(function(element2, index2) {
                 var td;
-                if (index2 == 0) {
+                if (index == 0) {
+                    var firstRow = $("<a href='#'>" + element2.replace(/_/g, " ") + "</a>");
+                    firstRow.css("color", "#E0E0E0");
+                    firstRow.css("text-decoration", "none");
+                    firstRow.on('click', function() {
+                        searchObj[element2] = $("#search").val();
+                        console.log(searchObj);
+                        read();
+                    });
+                    td = $("<td></td>").append(firstRow);
+                } else if (index2 == 0) {
                     td = $("<th>" + element2 + "</th>");
-                } else if (index == 0) {
-                    td = $("<td>" + element2.replace(/_/g, " ") + "</td>");
                 } else {
                     td = $(`<td></td>`);
                     var input = $(`<input type = 'text' value='${element2}' placeholder='${element2}' style='width:${maxWidth[index2]}px'>`);
