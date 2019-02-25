@@ -41,6 +41,10 @@
     // キーは"行:列"のstring
     var fixedObj = {};
 
+    var searchObj = {};
+
+    var csvFile;
+
     // 描画処理
     function draw(_csvArray, _start, _end) {
         table.empty();
@@ -169,15 +173,40 @@
         $("#save").off("click");
         table.empty();
         fixedObj = {};
+        csvFile = _e.target.files[0];
+        searchObj = {};
+        read();
+    }); //file onchange ここまで
 
+    function read() {
         var reader = new FileReader();
-        reader.readAsText(_e.target.files[0]);
+        reader.readAsText(csvFile);
         reader.onload = function() {
             var array = reader.result.split("\n");
             var csvArray = [];
-            array.forEach(function(element) {
-                csvArray.push(element.split(","));
-            });
+            if (Object.keys(searchObj).length == 0) {
+                array.forEach(function(element) {
+                    csvArray.push(element.split(","));
+                });
+            } else {
+                csvArray.push(array[0].split(","));
+                array.forEach(function(_element, _index) {
+                    var row = _element.split(",");
+                    var judge = true;
+                    csvArray[0].forEach(function(_element2, _index2) {
+                        if (row[_index2] != searchObj[_element2] && searchObj[_element2] != "*") {
+                            judge = false;
+                        }
+                    });
+                    if (judge) {
+                        csvArray.push(row);
+                    }
+                });
+            }
+            searchObj = {};
+            for (var i = 0; i < csvArray[0].length; i++) {
+                searchObj[csvArray[0][i]] = "*";
+            }
             var span = $("#page");
             span.empty();
             var pagenum = 300;
@@ -214,12 +243,12 @@
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = _e.target.files[0].name;
+                link.download = csvFile.name;
                 link.click();
                 URL.revokeObjectURL(url);
             });
         }; // onload ここまで
-    }); //file onchange ここまで
+    }
     </script>
 </body>
 
